@@ -1,0 +1,41 @@
+{
+  "Home": {
+    "iconClass": "fe fe-home"
+  },
+  "Interface": {
+    "iconClass": "fe fe-box",
+    "menuItems": [
+      "Cards design",
+      "Charts",
+      "Pricing Cards"
+    ]
+  },
+  "Components": {
+    "iconClass": "fe fe-calendar",
+    "menuItems": [
+      "Maps",
+      "Icons",
+      "Store",
+      "Blogs",
+      "Carousal"
+    ]
+  },
+  "Pages": {
+    "iconClass": "fe fe-file",
+    "menuItems": [
+      "Profile",
+      "Empty Page",
+      "Store",
+      "Blogs",
+      "Carousal"
+    ]
+  },
+  "Forms": {
+    "iconClass": "fe fe-check-square",
+    "menuItems": []
+  },
+  "Gallery": {
+    "iconClass": "fe fe-image",
+    "menuItems": []
+  }
+}
