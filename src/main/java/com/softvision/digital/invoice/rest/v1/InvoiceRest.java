@@ -3,22 +3,12 @@ package com.softvision.digital.invoice.rest.v1;
 import com.softvision.digital.common.model.ResultDto;
 import com.softvision.digital.common.util.ResultUtil;
 import com.softvision.digital.invoice.rest.v1.model.InvoiceDto;
-import com.softvision.digital.login.rest.v1.model.CredentialDto;
 import io.swagger.annotations.Api;
-import org.apache.commons.io.FileUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileNotFoundException;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,4 +50,36 @@ public class InvoiceRest {
         return INVOICES;
     }
 
+    @GetMapping("/{id}")
+    public InvoiceDto get(@PathVariable("id") String id) {
+        return INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().orElse(null);
+    }
+
+    @PostMapping("/")
+    public ResultDto add(@RequestBody @Valid InvoiceDto invoiceDto) {
+        return ResultUtil.getSuccess("Invoice added successfully", INVOICES.add(invoiceDto));
+    }
+
+    @PostMapping("/{id}")
+    public ResultDto update(@PathVariable("id") String id, @RequestBody @Valid InvoiceDto invoiceDto) {
+        INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().ifPresent(invoice -> {
+            invoice.setClient(invoiceDto.getClient());
+            invoice.setCreated(invoiceDto.getCreated());
+            invoice.setPrice(invoiceDto.getPrice());
+            invoice.setStatus(invoiceDto.getStatus());
+            invoice.setSubject(invoiceDto.getSubject());
+            invoice.setVat(invoiceDto.getVat());
+        });
+        return ResultUtil.getSuccess("Invoice updated successfully", invoiceDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResultDto delete(@PathVariable("id") String id) {
+        boolean removed = INVOICES.removeIf(invoice -> id.equals(invoice.getId()));
+        if (removed) {
+            return ResultUtil.getSuccess("Deleted successfully");
+        } else {
+            return ResultUtil.getSuccess("Could not find invoice to delete");
+        }
+    }
 }
