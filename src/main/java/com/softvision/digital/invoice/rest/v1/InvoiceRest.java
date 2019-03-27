@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "api/invoice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,7 +58,11 @@ public class InvoiceRest {
 
     @PostMapping("/")
     public ResultDto add(@RequestBody @Valid InvoiceDto invoiceDto) {
-        return ResultUtil.getSuccess("Invoice added successfully", INVOICES.add(invoiceDto));
+        Optional<InvoiceDto> optional = INVOICES.stream().filter(invoice -> invoiceDto.getId().equals(invoice.getId())).findFirst();
+        if (optional.isPresent()) {
+            return ResultUtil.getFailure("Invoice already exists with Id");
+        }
+        return ResultUtil.getSuccess("Invoice has been added successfully", INVOICES.add(invoiceDto));
     }
 
     @PostMapping("/{id}")
@@ -70,16 +75,16 @@ public class InvoiceRest {
             invoice.setSubject(invoiceDto.getSubject());
             invoice.setVat(invoiceDto.getVat());
         });
-        return ResultUtil.getSuccess("Invoice updated successfully", invoiceDto);
+        return ResultUtil.getSuccess("Invoice has been updated successfully", invoiceDto);
     }
 
     @DeleteMapping("/{id}")
     public ResultDto delete(@PathVariable("id") String id) {
         boolean removed = INVOICES.removeIf(invoice -> id.equals(invoice.getId()));
         if (removed) {
-            return ResultUtil.getSuccess("Deleted successfully");
+            return ResultUtil.getSuccess("Invoice has been deleted successfully");
         } else {
-            return ResultUtil.getSuccess("Could not find invoice to delete");
+            return ResultUtil.getSuccess("Could not find the invoice to delete");
         }
     }
 }
