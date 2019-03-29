@@ -5,11 +5,16 @@ import com.softvision.digital.common.util.ResultUtil;
 import com.softvision.digital.invoice.rest.v1.model.InvoiceDto;
 import io.swagger.annotations.Api;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +27,9 @@ import java.util.Optional;
 public class InvoiceRest {
 
     private static final List<InvoiceDto> INVOICES = new ArrayList<>();
+
     @PostConstruct
-    private void init() throws IOException {
+    private void init() {
         String[][] data = {
                 { "001401", "Design Works",         "Carlson Limited",  "87956621", "15 Dec 2017",  "Paid",             "887" },
                 { "001402", "UX Wireframes",        "Adobe",            "87956421", "12 Apr 2017",  "Pending",          "1200" },
@@ -48,16 +54,19 @@ public class InvoiceRest {
 
     @GetMapping("/")
     public List<InvoiceDto> getAll() {
+        sleep();
         return INVOICES;
     }
 
     @GetMapping("/{id}")
     public InvoiceDto get(@PathVariable("id") String id) {
+        sleep();
         return INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().orElse(null);
     }
 
     @PostMapping("/")
     public ResultDto add(@RequestBody @Valid InvoiceDto invoiceDto) {
+        sleep();
         Optional<InvoiceDto> optional = INVOICES.stream().filter(invoice -> invoiceDto.getId().equals(invoice.getId())).findFirst();
         if (optional.isPresent()) {
             return ResultUtil.getFailure("Invoice already exists with Id");
@@ -67,6 +76,7 @@ public class InvoiceRest {
 
     @PostMapping("/{id}")
     public ResultDto update(@PathVariable("id") String id, @RequestBody @Valid InvoiceDto invoiceDto) {
+        sleep();
         INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().ifPresent(invoice -> {
             invoice.setClient(invoiceDto.getClient());
             invoice.setCreated(invoiceDto.getCreated());
@@ -80,6 +90,7 @@ public class InvoiceRest {
 
     @DeleteMapping("/{id}")
     public ResultDto delete(@PathVariable("id") String id) {
+        sleep();
         boolean removed = INVOICES.removeIf(invoice -> id.equals(invoice.getId()));
         if (removed) {
             return ResultUtil.getSuccess("Invoice has been deleted successfully");
@@ -87,4 +98,13 @@ public class InvoiceRest {
             return ResultUtil.getSuccess("Could not find the invoice to delete");
         }
     }
+
+    private void sleep() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
