@@ -5,13 +5,7 @@ import com.softvision.digital.common.util.ResultUtil;
 import com.softvision.digital.invoice.rest.v1.model.InvoiceDto;
 import io.swagger.annotations.Api;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -31,11 +25,11 @@ public class InvoiceRest {
     @PostConstruct
     private void init() {
         String[][] data = {
-                { "001401", "Design Works",         "Carlson Limited",  "87956621", "15 Dec 2017",  "Paid",             "887" },
-                { "001402", "UX Wireframes",        "Adobe",            "87956421", "12 Apr 2017",  "Pending",          "1200" },
-                { "001403", "New Dashboard",        "Bluewolf",         "87956421", "23 Oct 2017",  "Pending",          "534" },
-                { "001404", "Landing Page",         "Salesforce",       "87956421", "2 Sep 2017",   "Due in 2 Weeks",   "1500" },
-                { "001405", "Marketting Templates", "Printic",          "87956421", "29 Jan 2018",  "Paid Today",       "648" }
+                { "100401", "Design Works",         "Carlson Limited",  "87956621", "15 Dec 2017",  "Paid",             "887" },
+                { "100402", "UX Wireframes",        "Adobe",            "87956421", "12 Apr 2017",  "Pending",          "1200" },
+                { "100403", "New Dashboard",        "Bluewolf",         "87956421", "23 Oct 2017",  "Pending",          "534" },
+                { "100404", "Landing Page",         "Salesforce",       "87956421", "2 Sep 2017",   "Due in 2 Weeks",   "1500" },
+                { "100405", "Marketting Templates", "Printic",          "87956421", "29 Jan 2018",  "Paid Today",       "648" }
         };
         for (String[] row : data) {
             int index=0;
@@ -54,6 +48,11 @@ public class InvoiceRest {
 
     @GetMapping("/")
     public List<InvoiceDto> getAll() {
+        return INVOICES;
+    }
+
+    @GetMapping("/slow")
+    public List<InvoiceDto> getAllSlow() {
         sleep();
         return INVOICES;
     }
@@ -71,7 +70,10 @@ public class InvoiceRest {
         if (optional.isPresent()) {
             return ResultUtil.getFailure("Invoice already exists with Id");
         }
-        return ResultUtil.getSuccess("Invoice has been added successfully", INVOICES.add(invoiceDto));
+        String nextId = String.valueOf(Integer.parseInt(INVOICES.get(INVOICES.size() - 1).getId())+1);
+        invoiceDto.setId(nextId);
+        INVOICES.add(invoiceDto);
+        return ResultUtil.getSuccess("Invoice has been added successfully", invoiceDto);
     }
 
     @PostMapping("/{id}")
