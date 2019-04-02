@@ -54,7 +54,7 @@ public class InvoiceRest {
     @GetMapping("/slow")
     public List<InvoiceDto> getAllSlow() {
         sleep();
-        return INVOICES;
+        return getAll();
     }
 
     @GetMapping("/{id}")
