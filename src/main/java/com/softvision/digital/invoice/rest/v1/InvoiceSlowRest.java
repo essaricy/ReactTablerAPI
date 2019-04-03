@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "api/invoice/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "api/invoice/v1/slow", produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE,
         value = "All operations pertaining to sample")
-public class InvoiceRest {
+public class InvoiceSlowRest {
 
     private static final List<InvoiceDto> INVOICES = new ArrayList<>();
 
@@ -48,16 +48,19 @@ public class InvoiceRest {
 
     @GetMapping("/")
     public List<InvoiceDto> getAll() {
+        sleep();
         return INVOICES;
     }
 
     @GetMapping("/{id}")
     public InvoiceDto get(@PathVariable("id") String id) {
+        sleep();
         return INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().orElse(null);
     }
 
     @PostMapping("/")
     public ResultDto add(@RequestBody @Valid InvoiceDto invoiceDto) {
+        sleep();
         Optional<InvoiceDto> optional = INVOICES.stream().filter(invoice -> invoiceDto.getId().equals(invoice.getId())).findFirst();
         if (optional.isPresent()) {
             return ResultUtil.getFailure("Invoice already exists with Id");
@@ -70,6 +73,7 @@ public class InvoiceRest {
 
     @PostMapping("/{id}")
     public ResultDto update(@PathVariable("id") String id, @RequestBody @Valid InvoiceDto invoiceDto) {
+        sleep();
         INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().ifPresent(invoice -> {
             invoice.setClient(invoiceDto.getClient());
             invoice.setCreated(invoiceDto.getCreated());
@@ -83,6 +87,7 @@ public class InvoiceRest {
 
     @DeleteMapping("/{id}")
     public ResultDto delete(@PathVariable("id") String id) {
+        sleep();
         boolean removed = INVOICES.removeIf(invoice -> id.equals(invoice.getId()));
         if (removed) {
             return ResultUtil.getSuccess("Invoice has been deleted successfully");
@@ -90,4 +95,13 @@ public class InvoiceRest {
             return ResultUtil.getSuccess("Could not find the invoice to delete");
         }
     }
+
+    private void sleep() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
