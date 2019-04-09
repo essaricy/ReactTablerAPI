@@ -23,7 +23,7 @@ public class LoginRest {
     public ResponseEntity<ResultDto> login(@RequestBody CredentialDto credential) {
         String loginId = credential.getLoginId();
         String password = credential.getPassword();
-
+        sleep();
         ResponseEntity responseEntity;
         if (!password.equalsIgnoreCase("#password")) {
             responseEntity = new ResponseEntity(ResultUtil.getFailure("Please provide login Id and password"), HttpStatus.BAD_REQUEST);
@@ -41,6 +41,14 @@ public class LoginRest {
             responseEntity = new ResponseEntity(ResultUtil.getFailure("Unknown Error. Something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseEntity;
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
