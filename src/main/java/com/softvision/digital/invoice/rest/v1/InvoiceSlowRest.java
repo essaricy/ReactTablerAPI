@@ -1,5 +1,7 @@
 package com.softvision.digital.invoice.rest.v1;
 
+import com.softvision.digital.common.annotations.InvoiceEditor;
+import com.softvision.digital.common.annotations.InvoiceViewerOrEditor;
 import com.softvision.digital.common.model.ResultDto;
 import com.softvision.digital.common.util.ResultUtil;
 import com.softvision.digital.invoice.rest.v1.model.InvoiceDto;
@@ -47,6 +49,7 @@ public class InvoiceSlowRest {
     }
 
     @GetMapping("/")
+    @InvoiceViewerOrEditor
     public List<InvoiceDto> getAll() {
         sleep();
         return INVOICES;
@@ -59,6 +62,7 @@ public class InvoiceSlowRest {
     }
 
     @PostMapping("/")
+    @InvoiceEditor
     public ResultDto add(@RequestBody @Valid InvoiceDto invoiceDto) {
         sleep();
         Optional<InvoiceDto> optional = INVOICES.stream().filter(invoice -> invoiceDto.getId().equals(invoice.getId())).findFirst();
@@ -72,6 +76,7 @@ public class InvoiceSlowRest {
     }
 
     @PostMapping("/{id}")
+    @InvoiceEditor
     public ResultDto update(@PathVariable("id") String id, @RequestBody @Valid InvoiceDto invoiceDto) {
         sleep();
         INVOICES.stream().filter(invoice -> id.equals(invoice.getId())).findFirst().ifPresent(invoice -> {
@@ -86,6 +91,7 @@ public class InvoiceSlowRest {
     }
 
     @DeleteMapping("/{id}")
+    @InvoiceEditor
     public ResultDto delete(@PathVariable("id") String id) {
         sleep();
         boolean removed = INVOICES.removeIf(invoice -> id.equals(invoice.getId()));
