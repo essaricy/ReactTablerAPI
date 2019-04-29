@@ -59,7 +59,7 @@ public class LoginRest {
     }
 
     private void setAuthentication(String roleName) {
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(roleName));
         Authentication auth = new UsernamePasswordAuthenticationToken(roleName, "#password", authorities);
         SecurityContextHolder.getContext().setAuthentication(auth);
